@@ -10,8 +10,10 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   syncPolicy:
-    # If the generator ever finds no folders, delete the Applications but
-    # leave what they deployed running.
+    # Never delete an Application because the generator stopped finding its folder:
+    # removing an environment is a deliberate act, done by hand.
+    applicationsSync: create-update
+    # And if an Application is deleted, leave what it deployed running.
     preserveResourcesOnDeletion: true
   generators:
     - git:

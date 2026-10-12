@@ -16,6 +16,7 @@ configs:
     accounts.trainer: login
     # Without this, a parent Application treats its child Applications as healthy
     # as soon as they exist, and sync waves between them do not wait.
+    # A child that has not synced yet can report Healthy, so require Synced too.
     resource.customizations.health.argoproj.io_Application: |
       hs = {}
       hs.status = "Progressing"
@@ -24,6 +25,10 @@ configs:
         hs.status = obj.status.health.status
         if obj.status.health.message ~= nil then
           hs.message = obj.status.health.message
+        end
+        if hs.status == "Healthy" and (obj.status.sync == nil or obj.status.sync.status ~= "Synced") then
+          hs.status = "Progressing"
+          hs.message = "Healthy but not yet synced"
         end
       end
       return hs

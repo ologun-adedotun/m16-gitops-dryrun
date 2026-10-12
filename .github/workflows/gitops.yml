@@ -1,6 +1,10 @@
 name: GitOps experiments
 on:
   workflow_dispatch:
+    inputs:
+      script:
+        description: Which experiment script
+        default: gitops.sh
 
 permissions:
   contents: write
@@ -21,4 +25,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: bash ci/prepare.sh
       - name: Experiments
-        run: bash ci/gitops.sh
+        run: bash "ci/${{ inputs.script }}"

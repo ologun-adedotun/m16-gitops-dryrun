@@ -12,13 +12,13 @@ spec:
   syncPolicy:
     # If the generator ever finds no folders, delete the Applications but
     # leave what they deployed running.
-    preserveResourcesOnDeletion: true
+    preserveResourcesOnDeletion: false
   generators:
     - git:
         repoURL: https://github.com/ologun-adedotun/m16-gitops-dryrun.git
         revision: main
         directories:
-          - path: deploy/envs/*
+          - path: deploy/env/*
   template:
     metadata:
       name: 'mission-{{.path.basename}}'

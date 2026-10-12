@@ -1,0 +1,19 @@
+# The only thing applied by hand. Everything else comes from Git through this.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ologun-adedotun/m16-gitops-dryrun.git
+    targetRevision: main
+    path: deploy/platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

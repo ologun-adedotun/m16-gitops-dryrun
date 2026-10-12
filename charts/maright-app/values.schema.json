@@ -1,0 +1,207 @@
+{
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "type":  "object",
+    "additionalProperties":  false,
+    "required":  [
+                     "replicaCount",
+                     "image",
+                     "config",
+                     "service",
+                     "resources"
+                 ],
+    "properties":  {
+                       "replicaCount":  {
+                                            "type":  "integer",
+                                            "minimum":  1,
+                                            "maximum":  10
+                                        },
+                       "image":  {
+                                     "type":  "object",
+                                     "additionalProperties":  false,
+                                     "required":  [
+                                                      "repository",
+                                                      "pullPolicy"
+                                                  ],
+                                     "properties":  {
+                                                        "repository":  {
+                                                                           "type":  "string",
+                                                                           "minLength":  1
+                                                                       },
+                                                        "tag":  {
+                                                                    "type":  "string",
+                                                                    "not":  {
+                                                                                "const":  "latest"
+                                                                            }
+                                                                },
+                                                        "pullPolicy":  {
+                                                                           "enum":  [
+                                                                                        "IfNotPresent",
+                                                                                        "Always",
+                                                                                        "Never"
+                                                                                    ]
+                                                                       }
+                                                    }
+                                 },
+                       "imagePullSecrets":  {
+                                                "type":  "array",
+                                                "items":  {
+                                                              "type":  "object",
+                                                              "required":  [
+                                                                               "name"
+                                                                           ]
+                                                          }
+                                            },
+                       "config":  {
+                                      "type":  "object",
+                                      "additionalProperties":  false,
+                                      "properties":  {
+                                                         "APP_NAME":  {
+                                                                          "type":  "string"
+                                                                      },
+                                                         "GREETING":  {
+                                                                          "type":  "string"
+                                                                      },
+                                                         "LOG_LEVEL":  {
+                                                                           "enum":  [
+                                                                                        "DEBUG",
+                                                                                        "INFO",
+                                                                                        "WARNING",
+                                                                                        "ERROR"
+                                                                                    ]
+                                                                       },
+                                                         "READY_AFTER_SECONDS":  {
+                                                                                     "type":  "string",
+                                                                                     "pattern":  "^[0-9]+$"
+                                                                                 }
+                                                     }
+                                  },
+                       "service":  {
+                                       "type":  "object",
+                                       "additionalProperties":  false,
+                                       "properties":  {
+                                                          "port":  {
+                                                                       "type":  "integer"
+                                                                   }
+                                                      }
+                                   },
+                       "resources":  {
+                                         "type":  "object"
+                                     },
+                       "podDisruptionBudget":  {
+                                                   "type":  "object",
+                                                   "additionalProperties":  false,
+                                                   "properties":  {
+                                                                      "enabled":  {
+                                                                                      "type":  "boolean"
+                                                                                  },
+                                                                      "minAvailable":  {
+                                                                                           "type":  "integer",
+                                                                                           "minimum":  0
+                                                                                       }
+                                                                  }
+                                               },
+                       "networkPolicy":  {
+                                             "type":  "object",
+                                             "additionalProperties":  false,
+                                             "properties":  {
+                                                                "enabled":  {
+                                                                                "type":  "boolean"
+                                                                            },
+                                                                "allowFromNamespaces":  {
+                                                                                            "type":  "array",
+                                                                                            "items":  {
+                                                                                                          "type":  "string"
+                                                                                                      }
+                                                                                        }
+                                                            }
+                                         },
+                       "autoscaling":  {
+                                           "type":  "object",
+                                           "additionalProperties":  false,
+                                           "properties":  {
+                                                              "enabled":  {
+                                                                              "type":  "boolean"
+                                                                          },
+                                                              "minReplicas":  {
+                                                                                  "type":  "integer",
+                                                                                  "minimum":  1
+                                                                              },
+                                                              "maxReplicas":  {
+                                                                                  "type":  "integer",
+                                                                                  "minimum":  1,
+                                                                                  "maximum":  20
+                                                                              },
+                                                              "targetCPUUtilizationPercentage":  {
+                                                                                                     "type":  "integer",
+                                                                                                     "minimum":  10,
+                                                                                                     "maximum":  95
+                                                                                                 },
+                                                              "scaleDownStabilizationSeconds":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "minimum":  0,
+                                                                                                    "maximum":  3600
+                                                                                                }
+                                                          }
+                                       },
+                       "shutdown":  {
+                                        "type":  "object",
+                                        "additionalProperties":  false,
+                                        "properties":  {
+                                                           "preStopSleepSeconds":  {
+                                                                                       "type":  "integer",
+                                                                                       "minimum":  0,
+                                                                                       "maximum":  60
+                                                                                   },
+                                                           "terminationGracePeriodSeconds":  {
+                                                                                                 "type":  "integer",
+                                                                                                 "minimum":  1,
+                                                                                                 "maximum":  300
+                                                                                             }
+                                                       }
+                                    },
+                       "topologySpread":  {
+                                              "type":  "object",
+                                              "additionalProperties":  false,
+                                              "properties":  {
+                                                                 "enabled":  {
+                                                                                 "type":  "boolean"
+                                                                             }
+                                                             }
+                                          },
+                       "route":  {
+                                     "type":  "object",
+                                     "additionalProperties":  false,
+                                     "properties":  {
+                                                        "enabled":  {
+                                                                        "type":  "boolean"
+                                                                    },
+                                                        "hostnames":  {
+                                                                          "type":  "array",
+                                                                          "items":  {
+                                                                                        "type":  "string"
+                                                                                    }
+                                                                      },
+                                                        "gateway":  {
+                                                                        "type":  "object",
+                                                                        "additionalProperties":  false,
+                                                                        "required":  [
+                                                                                         "name",
+                                                                                         "namespace"
+                                                                                     ],
+                                                                        "properties":  {
+                                                                                           "name":  {
+                                                                                                        "type":  "string"
+                                                                                                    },
+                                                                                           "namespace":  {
+                                                                                                             "type":  "string"
+                                                                                                         }
+                                                                                       }
+                                                                    },
+                                                        "timeout":  {
+                                                                        "type":  "string",
+                                                                        "pattern":  "^$|^[0-9]+(ms|s)$"
+                                                                    }
+                                                    }
+                                 }
+                   }
+}

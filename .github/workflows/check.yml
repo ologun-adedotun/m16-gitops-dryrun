@@ -1,0 +1,24 @@
+name: check
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: azure/setup-helm@v5
+        with:
+          version: v4.3.0
+      - name: The chart, and every environment's values against its schema
+        run: |
+          helm lint charts/maright-app
+          for e in deploy/envs/*/; do
+            helm template mission charts/maright-app -f "${e}values.yaml" > /dev/null
+            echo "ok: $e"
+          done

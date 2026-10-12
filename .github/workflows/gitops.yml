@@ -1,0 +1,24 @@
+name: GitOps experiments
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  gitops:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v7
+      - uses: azure/setup-helm@v5
+        with:
+          version: v4.3.0
+      - uses: helm/kind-action@v1
+      - name: Tools and images
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash ci/prepare.sh
+      - name: Experiments
+        run: bash ci/gitops.sh

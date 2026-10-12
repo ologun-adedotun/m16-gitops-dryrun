@@ -1,0 +1,23 @@
+image:
+  repository: ghcr.io/ologun-adedotun/m16-gitops-dryrun/maright-app
+  tag: v2.0.0
+  pullPolicy: IfNotPresent
+
+config:
+  APP_NAME: maright-app
+  GREETING: Hello from production
+  LOG_LEVEL: INFO
+  READY_AFTER_SECONDS: "5"
+
+networkPolicy:
+  enabled: true
+  allowFromNamespaces:
+    - envoy-gateway-system
+
+route:
+  enabled: true
+  hostnames:
+    - mission.local
+  gateway:
+    name: mission
+    namespace: infra

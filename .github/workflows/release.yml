@@ -1,0 +1,38 @@
+name: release
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build and push the image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="sha-${GITHUB_SHA::7}"
+          IMG="ghcr.io/${GITHUB_REPOSITORY}/maright-app"
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker build -t "$IMG:$TAG" app
+          docker push "$IMG:$TAG"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+      - name: Open the pull request that moves staging
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          B="bump/staging-$TAG"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$B"
+          sed -i "s/^  tag: .*/  tag: $TAG/" deploy/envs/staging/values.yaml
+          git commit -am "Move staging to $TAG"
+          git push origin "$B"
+          gh pr create --base main --head "$B" --title "Move staging to $TAG" \
+            --body "Opened by the release workflow. Merging this deploys $TAG to staging."

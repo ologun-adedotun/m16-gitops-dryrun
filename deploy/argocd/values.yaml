@@ -1,0 +1,40 @@
+# Argo CD, installed from the argo-cd chart 10.10.3 (Argo CD v3.5.5).
+# Everything here is configuration. No password, key or token belongs in this file.
+global:
+  domain: localhost:8080
+
+dex:
+  enabled: false
+
+notifications:
+  enabled: false
+
+configs:
+  cm:
+    admin.enabled: true
+    # A local account that can log in and look, nothing more.
+    accounts.trainer: login
+    # Without this, a parent Application treats its child Applications as healthy
+    # as soon as they exist, and sync waves between them do not wait.
+    resource.customizations.health.argoproj.io_Application: |
+      hs = {}
+      hs.status = "Progressing"
+      hs.message = ""
+      if obj.status ~= nil and obj.status.health ~= nil then
+        hs.status = obj.status.health.status
+        if obj.status.health.message ~= nil then
+          hs.message = obj.status.health.message
+        end
+      end
+      return hs
+  rbac:
+    policy.default: ""
+    policy.csv: |
+      g, trainer, role:readonly
+  # Where public charts come from. No credentials: all are public.
+  repositories:
+    envoyproxy:
+      name: envoyproxy
+      type: helm
+      url: docker.io/envoyproxy
+      enableOCI: "true"

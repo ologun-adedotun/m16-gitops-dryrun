@@ -1,0 +1,47 @@
+# Wave 0: one Application per folder under deploy/envs.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: mission
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    # If the generator ever finds no folders, delete the Applications but
+    # leave what they deployed running.
+    preserveResourcesOnDeletion: true
+  generators:
+    - git:
+        repoURL: https://github.com/ologun-adedotun/m16-gitops-dryrun.git
+        revision: main
+        directories:
+          - path: deploy/envs/*
+  template:
+    metadata:
+      name: 'mission-{{.path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/ologun-adedotun/m16-gitops-dryrun.git
+        targetRevision: main
+        path: charts/maright-app
+        helm:
+          releaseName: mission
+          valueFiles:
+            - '../../deploy/envs/{{.path.basename}}/values.yaml'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 3
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 1m

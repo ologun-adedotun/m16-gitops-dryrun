@@ -1,0 +1,55 @@
+replicaCount: 2
+
+image:
+  repository: maright-app
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+config:
+  APP_NAME: maright-app
+  GREETING: Hello from the chart
+  LOG_LEVEL: INFO
+  READY_AFTER_SECONDS: "5"
+
+service:
+  port: 80
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+networkPolicy:
+  enabled: true
+  allowFromNamespaces: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 60
+  scaleDownStabilizationSeconds: 60
+
+shutdown:
+  preStopSleepSeconds: 5
+  terminationGracePeriodSeconds: 30
+
+topologySpread:
+  enabled: false
+
+route:
+  enabled: false
+  hostnames: []
+  gateway:
+    name: mission
+    namespace: infra
+  timeout: ""

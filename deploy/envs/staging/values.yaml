@@ -3,6 +3,7 @@ image:
   tag: v2.1.0
   pullPolicy: IfNotPresent
 
+replicaCount: "two"
 config:
   APP_NAME: maright-app
   GREETING: Hello from staging

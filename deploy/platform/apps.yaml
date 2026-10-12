@@ -18,7 +18,7 @@ spec:
         repoURL: https://github.com/ologun-adedotun/m16-gitops-dryrun.git
         revision: main
         directories:
-          - path: deploy/envs/*
+          - path: deploy/env/*
   template:
     metadata:
       name: 'mission-{{.path.basename}}'

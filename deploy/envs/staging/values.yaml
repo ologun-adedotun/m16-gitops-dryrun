@@ -21,3 +21,6 @@ route:
   gateway:
     name: mission
     namespace: infra
+
+podDisruptionBudget:
+  enabled: false
